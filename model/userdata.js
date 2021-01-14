@@ -40,6 +40,9 @@ const userdata = new schema({
             required:false
         }       
     },
-
+    avatar:{
+        type:String,
+        required:false
+    }
 },{_id:false});
 module.exports =  mongoose.model('userdata',userdata);

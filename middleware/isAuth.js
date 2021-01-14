@@ -17,6 +17,7 @@ exports.isAuthenticate =  (req,res,next) =>{
     }
     catch(e){
         let err = new Error(e);
+        
         res.status(500).json({token,msg:err.message});
     }
 }
@@ -29,4 +30,15 @@ exports.isadmin = (req,res,next) =>{
             next();
         }
     });
+}
+
+exports.isSameUser=(req,res,next)=>{
+    let userid = req.userid;
+    let check = req.body.id;
+    if(userid == check){
+        next();
+    }else{
+        res.status(403).json("Not Authorized!");
+        return;
+    }
 }
