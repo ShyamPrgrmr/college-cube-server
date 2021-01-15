@@ -13,6 +13,7 @@ const isAuth = require("./middleware/isAuth").isAuthenticate;
 const isAdmin = require("./middleware/isAuth").isadmin;
 const isSameUser = require("./middleware/isAuth").isSameUser;
 const user = require('./controller/user');
+const shop = require('./controller/shop');
 
 const app = express();
 const port = 8080;
@@ -59,6 +60,17 @@ app.use('/',(req,res,next)=>{
     console.log('Date & Time : ',new Date().toDateString(),"/",new Date().getHours(),":",new Date().getMinutes(),":",new Date().getSeconds());
     next();
 });
+
+//inventory operation
+
+
+
+//shop operation
+app.post('/shop/addorder',isAuth,shop.addorder);
+app.get('/shop/getorders',isAuth,shop.getorders);
+app.get('/shop/getorderdata',isAuth,shop.getorderdata);
+app.put('/shop/updateorder',isAuth,shop.updateproduct);
+app.delete('/shop/deleteorder',isAuth,shop.deleteorder);
 
 //admin operation
 app.post('/admin/login',auth.adminlogin);
