@@ -11,6 +11,7 @@ exports.isAuthenticate =  (req,res,next) =>{
         req.userid = test.userid;
         if(!test){
             res.status(401).json({token,msg:"Opearation are not authenticated."});
+            return;
         }else{
             next();
         }
@@ -25,7 +26,7 @@ exports.isAuthenticate =  (req,res,next) =>{
 exports.isadmin = (req,res,next) =>{
     let userid = req.userid;
     admin.findById(userid).then(data=>{
-        if(!data) res.status(403).json({err:"Not Authorized"});
+        if(!data) {res.status(403).json({err:"Not Authorized"});return;}
         else{
             next();
         }

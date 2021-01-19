@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require("multer");
 const path = require('path');
+const helmet = require('helmet');
 
 //file import
 const auth = require('./controller/auth');
@@ -14,6 +15,8 @@ const isAdmin = require("./middleware/isAuth").isadmin;
 const isSameUser = require("./middleware/isAuth").isSameUser;
 const user = require('./controller/user');
 const shop = require('./controller/shop');
+const merchant = require('./controller/merchant');
+const inventory = require('./controller/inventory');
 
 const app = express();
 const port = 8080;
@@ -52,17 +55,29 @@ app.use((req,res,next)=>{
 
 app.use('/images',express.static(path.join(__dirname,'images')));
 
+app.use(helmet({
+    referrerPolicy:{policy:'no-referrer'}
+}));
+
 app.get('/', (req, res, next) => {res.status(200).json({msg:"Server is up..."}); } );
 
 //log
 app.use('/',(req,res,next)=>{
     console.log("Endpoint : " + req.url);
     console.log('Date & Time : ',new Date().toDateString(),"/",new Date().getHours(),":",new Date().getMinutes(),":",new Date().getSeconds());
+   // console.log('Body : ',req.body);
     next();
 });
 
-//inventory operation
+//merchant operation
+app.post('/admin/inventory/addvendor',isAuth,isAdmin,merchant.addmerchant);
+app.put('/admin/inventory/updatevendor',isAuth,isAdmin,merchant.updatemerchant);
+app.delete('/admin/inventory/deletevendor',isAuth,isAdmin,merchant.deletemerchant);
+app.get('/admin/inventory/getvendors',isAuth,isAdmin,merchant.getmerchants);
 
+//inventory operation
+app.post('/admin/inventory/addproductstoinventory',isAuth,isAdmin,inventory.addproductstoinventory);
+app.get('/admin/inventory/viewproductsininventory',isAuth,isAdmin,inventory.viewproductdataininventory);
 
 
 //shop operation
@@ -71,6 +86,10 @@ app.get('/shop/getorders',isAuth,shop.getorders);
 app.get('/shop/getorderdata',isAuth,shop.getorderdata);
 app.put('/shop/updateorder',isAuth,shop.updateproduct);
 app.delete('/shop/deleteorder',isAuth,shop.deleteorder);
+
+//-------under construction-------//
+app.get('/shop/getorderstatus',isAuth);
+
 
 //admin operation
 app.post('/admin/login',auth.adminlogin);
@@ -104,6 +123,13 @@ app.put('/admin/updateproduct',isAuth,isAdmin,admin.updateproduct);
 app.delete('/admin/deleteproduct',isAuth,isAdmin,admin.deleteproduct);
 app.get('/product/getproduct',isAuth,product.getproduct);
 app.put('/admin/updateproductprice',isAuth,isAdmin,admin.updateproductprice);
+
+
+//delivery service
+//-------under construction-------//
+app.get('/admin/orders/getallorders',isAuth,isAdmin);
+app.post('/admin/orders/setdelivery',isAuth,isAdmin);
+
 
 
 //error handling
