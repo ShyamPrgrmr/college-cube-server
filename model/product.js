@@ -15,6 +15,11 @@ const product = new schema({
        type:String,
        required:false
    },
+   manufacturer:{
+       type:String,
+       required:true
+   },
+   group:{type:String,required:true},
    imgsrc:[
         {
             type:String,

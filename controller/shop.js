@@ -29,7 +29,8 @@ exports.addorder=async(req,res,next)=>{
         let finalorder = await order.insertMany({
             userid,
             products,
-            totalprice
+            totalprice,
+            status:-1
         });
         
         res.status(200).json(finalorder);
@@ -89,6 +90,8 @@ exports.getorderdata=async (req,res,next)=>{
 }
 
 //frontend after this redirect page to order page
+//think about updating the orders. this is not efficient.
+//most probably this is not helpful
 
 exports.updateproduct=async (req,res,next)=>{
     let orderid = req.body.orderid;
@@ -129,6 +132,8 @@ exports.updateproduct=async (req,res,next)=>{
         next({code:500,msg:err.message});       
     }
 }
+
+
 
 exports.deleteorder = async (req,res,next) => {
     let productid = req.body.orderid;

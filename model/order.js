@@ -20,9 +20,13 @@ const order = new schema({
                 type:Number,
                 required:true
             }
-        }
+        },{_id:false}
     ],
     totalprice:{
+        type:Number,
+        required:true
+    },
+    status:{
         type:Number,
         required:true
     }

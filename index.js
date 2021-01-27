@@ -87,10 +87,6 @@ app.get('/shop/getorderdata',isAuth,shop.getorderdata);
 app.put('/shop/updateorder',isAuth,shop.updateproduct);
 app.delete('/shop/deleteorder',isAuth,shop.deleteorder);
 
-//-------under construction-------//
-app.get('/shop/getorderstatus',isAuth);
-
-
 //admin operation
 app.post('/admin/login',auth.adminlogin);
 
@@ -126,10 +122,10 @@ app.put('/admin/updateproductprice',isAuth,isAdmin,admin.updateproductprice);
 
 
 //delivery service
-//-------under construction-------//
-app.get('/admin/orders/getallorders',isAuth,isAdmin);
-app.post('/admin/orders/setdelivery',isAuth,isAdmin);
-
+app.get('/admin/order/getallorders',isAuth,isAdmin,admin.getAllOrders);
+app.post('/admin/order/setdelivery',isAuth,isAdmin,admin.setorder);
+app.put('/admin/order/outfordeliver',isAuth,isAdmin,admin.outForDelivery);
+app.put('/admin/order/delivered',isAuth,isAdmin,admin.delivered);
 
 
 //error handling
