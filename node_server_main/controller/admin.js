@@ -7,6 +7,7 @@ const productprice = require("../model/productprice");
 const orders = require("../model/order");
 const userdata = require("../model/userdata");
 const order = require("../model/order");
+const product = require("./../model/product");
 
 
 exports.addproduct = (req,res,next) =>{
@@ -110,7 +111,18 @@ exports.getAllOrders=async(req,res,next)=>{
             temp.username = name;
             temp.usermobile = mobile;
             temp.useraddress = address;
-            temp.products = products;
+            //temp.products = products;
+            let data = [];
+            
+            for(let i=0;i<products.length;i++){
+                const a = await product.find({_id:products[i].productid});
+                let quantity = products[i].quantity;
+                let price = products[i].price;
+                let id = products[i].productid;
+                data.push({name:a[0].name,quantity,price,id});
+            }
+
+            temp.products = data;
             temp.totalprice = totalprice;
             temp.placedat = createdAt;
             temp.orderid = _id;  

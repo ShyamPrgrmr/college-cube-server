@@ -20,7 +20,7 @@ exports.isAuthenticate =  (req,res,next) =>{
         let err = new Error(e);
         
         res.status(500).json({token,msg:err.message});
-    }
+    }   
 }
 
 exports.isadmin = (req,res,next) =>{

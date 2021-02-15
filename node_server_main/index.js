@@ -117,7 +117,7 @@ app.post('/admin/addproduct', upload.array('file',4),isAuth,isAdmin,(req, res, n
 },admin.addproduct);
 app.put('/admin/updateproduct',isAuth,isAdmin,admin.updateproduct);
 app.delete('/admin/deleteproduct',isAuth,isAdmin,admin.deleteproduct);
-app.get('/product/getproduct',isAuth,product.getproduct);
+app.get('/product/getproducts',isAuth,product.getproduct);
 app.put('/admin/updateproductprice',isAuth,isAdmin,admin.updateproductprice);
 
 
