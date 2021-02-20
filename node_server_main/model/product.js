@@ -19,7 +19,6 @@ const product = new schema({
        type:String,
        required:true
    },
-   group:{type:String,required:true},
    imgsrc:[
         {
             type:String,

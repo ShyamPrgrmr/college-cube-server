@@ -11,23 +11,19 @@ const product = require("./../model/product");
 
 
 exports.addproduct = (req,res,next) =>{
-    let data = JSON.parse(req.body.data);
+    let data = req.body;
     let name = data.name;
     let description = data.description;
     let measurement = data.measurement;
     let manufacturer = data.manufacturer;
-    let group = data.group;
-    let files = req.files.map(data=>{
-        return new String(data.path).replace(/\\/g,"/");
-    });
+    let files = data.images;
 
     Product.insertMany([{
         name,
         description,
         measurement,
         imgsrc: files,
-        manufacturer,
-        group
+        manufacturer
     }]).then(product=>{ 
         
         let id = product[0]._id;
@@ -54,7 +50,6 @@ exports.updateproduct=async(req,res,next)=>{
     let measurement = req.body.measurement;
     let description = req.body.description;
     let manufacturer = req.body.manufacturer;
-    let group = req.body.group;
     let id = req.body.id;
     let product = await Product.findById(id);
     if(!product) {res.status(404).json({msg:"Product not found"});return;}
@@ -63,7 +58,6 @@ exports.updateproduct=async(req,res,next)=>{
         product.measurement=measurement;
         product.description=description;
         product.manufacturer=manufacturer;
-        product.group=group;
         let updatedproduct = await product.save();
         res.status(200).json({updatedproduct});
     }

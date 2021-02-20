@@ -23,6 +23,26 @@ exports.isAuthenticate =  (req,res,next) =>{
     }   
 }
 
+exports.isAuthenticateGet = (req,res,next) =>{
+    let token = req.query.token;
+    try{
+        let t = decrypt(token);
+        let test = jwt.verify(t,"Secret");
+        req.userid = test.userid;
+        if(!test){
+            res.status(401).json({token,msg:"Opearation are not authenticated."});
+            return;
+        }else{
+            next();
+        }
+    }
+    catch(e){
+        let err = new Error(e);
+        
+        res.status(500).json({token,msg:err.message});
+    }   
+};
+
 exports.isadmin = (req,res,next) =>{
     let userid = req.userid;
     admin.findById(userid).then(data=>{

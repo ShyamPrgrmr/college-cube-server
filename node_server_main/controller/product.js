@@ -5,8 +5,9 @@ exports.getproduct=async(req,res,next)=>{
     const currentPage = page || 1;
     const perpage = 10;
     try {     
-        let totalitem = await Products.find().countDocuments();
+        
         let product = await Products.find().skip((currentPage-1)*perpage).limit(perpage);
+        let totalitem = product.length;
         res.status(200).json({product:product,item:totalitem});
     } catch (error) {
         err = new Error(error);

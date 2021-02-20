@@ -12,6 +12,7 @@ const product = require("./controller/product");
 const admin = require("./controller/admin");
 const isAuth = require("./middleware/isAuth").isAuthenticate;
 const isAdmin = require("./middleware/isAuth").isadmin;
+const isAuthGet = require("./middleware/isAuth").isAuthenticateGet;
 const isSameUser = require("./middleware/isAuth").isSameUser;
 const user = require('./controller/user');
 const shop = require('./controller/shop');
@@ -26,7 +27,7 @@ const storage = multer.diskStorage({
       cb(null, 'images/product')
     },
     filename: function (req, file, cb) {
-      cb(null, new Date().getTime()+"-"+ file.originalname );
+      cb(null, new Date().getTime()+""+(Math.floor(Math.random()*100000))+ new String(file.originalname).replace(/\s/g,"_").toLowerCase());
     }
 });
 
@@ -35,7 +36,7 @@ const strg = multer.diskStorage({
       cb(null, 'images/avatar')
     },
     filename: function (req, file, cb) {
-      cb(null, new Date().getTime()+"-"+ file.originalname );
+      cb(null, new Date().getTime()+""+( Math.floor(Math.random()*100000) ) +new String(file.originalname).replace(/\s/g,"_").toLowerCase());
     }
 });
 
@@ -65,7 +66,7 @@ app.get('/', (req, res, next) => {res.status(200).json({msg:"Server is up..."});
 app.use('/',(req,res,next)=>{
     console.log("Endpoint : " + req.url);
     console.log('Date & Time : ',new Date().toDateString(),"/",new Date().getHours(),":",new Date().getMinutes(),":",new Date().getSeconds());
-   // console.log('Body : ',req.body);
+    console.log('Params : ',req.query);
     next();
 });
 
@@ -106,18 +107,22 @@ app.put('/user/updateuseravatar',uploadavatar.single('file'),isAuth,(req,res,nex
 },user.setuseravtar);
 
 //product operation
-app.post('/admin/addproduct', upload.array('file',4),isAuth,isAdmin,(req, res, next) => {
+app.post('/admin/addproductimage', upload.array('file',1),isAuth,isAdmin,(req, res, next) => {
     const file = req.files;
     if (!file) {
         res.status(400).json({err:"Please Upload File!"});
     }else{
-        next();
+        res.status(200).json(  new String(file[0].path).replace(/\\/g,"/"));
     }  
+});
 
-},admin.addproduct);
+
+app.post("/admin/addproductdata",isAuth,isAdmin,admin.addproduct);
+
+
 app.put('/admin/updateproduct',isAuth,isAdmin,admin.updateproduct);
 app.delete('/admin/deleteproduct',isAuth,isAdmin,admin.deleteproduct);
-app.get('/product/getproducts',isAuth,product.getproduct);
+app.get('/product/getproducts',isAuthGet,product.getproduct);
 app.put('/admin/updateproductprice',isAuth,isAdmin,admin.updateproductprice);
 
 
