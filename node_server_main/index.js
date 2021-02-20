@@ -66,7 +66,6 @@ app.get('/', (req, res, next) => {res.status(200).json({msg:"Server is up..."});
 app.use('/',(req,res,next)=>{
     console.log("Endpoint : " + req.url);
     console.log('Date & Time : ',new Date().toDateString(),"/",new Date().getHours(),":",new Date().getMinutes(),":",new Date().getSeconds());
-    console.log('Params : ',req.query);
     next();
 });
 
