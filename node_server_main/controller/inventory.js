@@ -36,7 +36,10 @@ exports.addproductstoinventory = async (req,res,next)=>{
 
 exports.viewproductdataininventory= async (req,res,next)=>{
     try{
-        let inventoryproducts = await product.find();
+        let page = req.query.page;
+        const currentPage = page || 1;
+        const perpage = 10;
+        let inventoryproducts = await product.find().skip((currentPage-1)*perpage).limit(perpage);
         let response = [];
         let length = inventoryproducts.length;
         
@@ -59,8 +62,8 @@ exports.viewproductdataininventory= async (req,res,next)=>{
         res.status(200).json(response);
 
     }catch(e){
-        let err = new Error(r); res.status(500).json({err:err.stack});
+        let err = new Error(e); res.status(500).json({err:err.stack});
     }
     
-    res.status(200).json(response);
+    res.status(200).json([]);
 }

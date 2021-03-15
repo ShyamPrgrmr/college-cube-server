@@ -24,7 +24,11 @@ const product = new schema({
             type:String,
             required:false
         }
-   ]
+   ],
+   category:{
+       type:String,
+       required:true
+   }
 },{timestamps:true});
 
 

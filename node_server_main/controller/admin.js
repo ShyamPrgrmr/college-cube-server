@@ -17,13 +17,16 @@ exports.addproduct = (req,res,next) =>{
     let measurement = data.measurement;
     let manufacturer = data.manufacturer;
     let files = data.images;
+    let category = data.category;
+    let keywords = data.keywords;
 
     Product.insertMany([{
         name,
         description,
         measurement,
         imgsrc: files,
-        manufacturer
+        manufacturer,
+        category
     }]).then(product=>{ 
         
         let id = product[0]._id;
@@ -50,6 +53,7 @@ exports.updateproduct=async(req,res,next)=>{
     let measurement = req.body.measurement;
     let description = req.body.description;
     let manufacturer = req.body.manufacturer;
+    let category = req.body.category;
     let id = req.body.id;
     let product = await Product.findById(id);
     if(!product) {res.status(404).json({msg:"Product not found"});return;}
@@ -58,6 +62,7 @@ exports.updateproduct=async(req,res,next)=>{
         product.measurement=measurement;
         product.description=description;
         product.manufacturer=manufacturer;
+        product.category = category;
         let updatedproduct = await product.save();
         res.status(200).json({updatedproduct});
     }
@@ -132,6 +137,50 @@ exports.getAllOrders=async(req,res,next)=>{
     }
 }
 
+
+exports.getAllAcceptedOrders=async (req,res,next)=>{
+    try{
+        const orderdata = await order.find();
+        let response = [];
+        let length = orderdata.length;
+
+        for(let i = 0;i < length;i++){
+            let temp = {};
+            const {userid,products,totalprice,createdAt,_id,status} = orderdata[i];
+            const {name,mobile,address} = await userdata.findById(userid);
+            
+            temp.userid = userid;
+            temp.username = name;
+            temp.usermobile = mobile;
+            temp.useraddress = address;
+            //temp.products = products;
+            let data = [];
+            
+            for(let i=0;i<products.length;i++){
+                const a = await product.find({_id:products[i].productid});
+                let quantity = products[i].quantity;
+                let price = products[i].price;
+                let id = products[i].productid;
+                data.push({name:a[0].name,quantity,price,id});
+            }
+
+            temp.products = data;
+            temp.totalprice = totalprice;
+            temp.placedat = createdAt;
+            temp.orderid = _id;  
+            temp.orderstatus = status;
+
+            if(status >= 1)
+                response.push(temp);
+        }
+
+        res.status(200).json(response);
+    }catch(e){
+        let err = new Error(e);
+        next({code:500,msg:err.stack}); 
+    }
+}
+
 /*
     Order status scale : 
     -1 : not accepted yet waiting       orange
@@ -169,6 +218,7 @@ exports.outForDelivery = async(req,res,next)=>{
 }
 
 
+
 exports.delivered = async(req,res,next)=>{
     try{
         const orderid  = req.body.orderid;
@@ -179,5 +229,85 @@ exports.delivered = async(req,res,next)=>{
     }catch(e){
         let err = new Error(e);
         next({code:500,msg:err.stack});
+    }
+}
+
+
+exports.getNumbersofAllAcceptedOrders=async(req,res,next)=>{
+    try{    
+        let temp = await order.find();
+
+
+        let resp = temp.filter(data=>{
+            let id = data._id;
+            let status = data.status;
+            
+            let tempdate1 = new Date(data.updatedAt).toISOString();
+            let tempdate2 = new Date(req.query.date).toISOString(); 
+            
+            let date1 = tempdate1.slice(0,tempdate1.indexOf("T"));
+            let date2 = tempdate2.slice(0,tempdate2.indexOf("T"));
+
+            if(date1 === date2)
+                return(true);
+            else
+                return(false);
+        });
+
+        let accepted=0,rejected=0,delivered=0,arrived=0;
+
+        resp.forEach(data=>{
+            if(data.status === 1) accepted++;
+            else if(data.status === 0) rejected++;
+            else if(data.status === 3) {accepted++; delivered++;}
+            else if(data.status === -1) {arrived}
+        }) 
+
+        res.status(200).json({accepted,rejected,delivered,arrived});
+
+    }catch(err){
+        let e  = new Error(err);
+        next({code:500,msg:e.stack});
+    }
+}
+
+
+
+
+exports.getDateWiseNumbers=async(req,res,next)=>{
+    try{    
+        let temp = await order.find();
+
+
+        let resp = temp.filter(data=>{
+            let id = data._id;
+            let status = data.status;
+            
+            let tempdate1 = new Date(data.updatedAt).toISOString();
+            let tempdate2 = new Date(req.query.date).toISOString(); 
+            
+            let date1 = tempdate1.slice(0,tempdate1.indexOf("T"));
+            let date2 = tempdate2.slice(0,tempdate2.indexOf("T"));
+
+            if(date1 === date2)
+                return(true);
+            else
+                return(false);
+        });
+
+        let accepted=0,rejected=0,delivered=0,arrived=0;
+
+        resp.forEach(data=>{
+            if(data.status === 1) accepted++;
+            else if(data.status === 0) rejected++;
+            else if(data.status === 3) {accepted++; delivered++;}
+            else if(data.status === -1) {arrived}
+        }) 
+
+        res.status(200).json({accepted,rejected,delivered,arrived});
+
+    }catch(err){
+        let e  = new Error(err);
+        next({code:500,msg:e.stack});
     }
 }

@@ -4,8 +4,8 @@ const bcrypt = require("bcryptjs");
 const decrypt = require('./../controller/crypt').decrypt;
 
 exports.isAuthenticate =  (req,res,next) =>{
-    let token = req.body.token;
     try{
+        let token = req.body.token;
         let t = decrypt(token);
         let test = jwt.verify(t,"Secret");
         req.userid = test.userid;
@@ -18,14 +18,13 @@ exports.isAuthenticate =  (req,res,next) =>{
     }
     catch(e){
         let err = new Error(e);
-        
         res.status(500).json({token,msg:err.message});
     }   
 }
 
 exports.isAuthenticateGet = (req,res,next) =>{
-    let token = req.query.token;
     try{
+        let token = req.query.token;
         let t = decrypt(token);
         let test = jwt.verify(t,"Secret");
         req.userid = test.userid;

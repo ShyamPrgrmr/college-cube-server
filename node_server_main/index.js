@@ -64,7 +64,7 @@ app.get('/', (req, res, next) => {res.status(200).json({msg:"Server is up..."});
 
 //log
 app.use('/',(req,res,next)=>{
-    console.log("Endpoint : " + req.url);
+    //console.log("Endpoint : " + req.url);
     console.log('Date & Time : ',new Date().toDateString(),"/",new Date().getHours(),":",new Date().getMinutes(),":",new Date().getSeconds());
     next();
 });
@@ -77,7 +77,7 @@ app.get('/admin/inventory/getvendors',isAuth,isAdmin,merchant.getmerchants);
 
 //inventory operation
 app.post('/admin/inventory/addproductstoinventory',isAuth,isAdmin,inventory.addproductstoinventory);
-app.get('/admin/inventory/viewproductsininventory',isAuth,isAdmin,inventory.viewproductdataininventory);
+app.get('/admin/inventory/viewproductsininventory',isAuthGet,isAdmin,inventory.viewproductdataininventory);
 
 
 //shop operation
@@ -122,14 +122,18 @@ app.post("/admin/addproductdata",isAuth,isAdmin,admin.addproduct);
 app.put('/admin/updateproduct',isAuth,isAdmin,admin.updateproduct);
 app.delete('/admin/deleteproduct',isAuth,isAdmin,admin.deleteproduct);
 app.get('/product/getproducts',isAuthGet,product.getproduct);
+app.get('/product/getallproducts',isAuthGet,isAdmin,product.getAllproduct);
+app.get('/product/getproductsprice',isAuthGet,product.getproductprice);
 app.put('/admin/updateproductprice',isAuth,isAdmin,admin.updateproductprice);
 
 
 //delivery service
-app.get('/admin/order/getallorders',isAuth,isAdmin,admin.getAllOrders);
+app.get('/admin/order/getallorders',isAuthGet,isAdmin,admin.getAllOrders);
+app.get('/admin/order/getacceptedorder',isAuthGet,isAdmin,admin.getAllAcceptedOrders);
 app.post('/admin/order/setdelivery',isAuth,isAdmin,admin.setorder);
 app.put('/admin/order/outfordeliver',isAuth,isAdmin,admin.outForDelivery);
 app.put('/admin/order/delivered',isAuth,isAdmin,admin.delivered);
+app.get('/admin/order/getnumbers',isAuthGet,isAdmin,admin.getNumbersofAllAcceptedOrders);
 
 
 //error handling
