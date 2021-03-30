@@ -57,11 +57,13 @@ exports.getuserdata = async (req,res,next)=>{
     let _id = req.userid;
     try{
         let user = await userdata.findById(_id);
-        if(!user){
+        let d = await usersignup.findById(_id);
+
+        if(!user || !d){
             let err = new Error("User not found!");
             next({msg:err.message,code:404});
         }else{
-            res.status(200).json(user);
+            res.status(200).json({user,email : d.email});
         }
 
     }catch(error){

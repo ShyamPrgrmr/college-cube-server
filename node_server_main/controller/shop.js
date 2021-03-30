@@ -66,7 +66,6 @@ exports.getorderdata=async (req,res,next)=>{
             let temp = productdata[i];
             let data = await products.findById(temp.productid);
             let pricepermeasurement = await product.findById(temp.productid);
-            console.log(pricepermeasurement)
             let pdata = {};
             pdata.name = data.name;
             pdata.measurement = data.measurement;
@@ -145,3 +144,4 @@ exports.deleteorder = async (req,res,next) => {
         next({msg:error.message,code:500});
     }
 }
+

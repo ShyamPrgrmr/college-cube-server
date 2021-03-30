@@ -6,6 +6,10 @@ const userdata = new schema({
         type:String,
         required:true
     },
+    gender:{
+        type:String,
+        required:true
+    },
     name:{
        firstname:{
            type:String,
@@ -33,7 +37,7 @@ const userdata = new schema({
         },
         pincode:{
             type:Number,
-            required:true
+            required:true,
         },
         landmark:{
             type:String,
@@ -43,6 +47,20 @@ const userdata = new schema({
     avatar:{
         type:String,
         required:false
+    },
+    bdate:{
+        day:{
+            type:Number,
+            required:true
+        },
+        month:{
+            type:Number,
+            required:true
+        },
+        year:{
+            type:Number,
+            required:true
+        }
     }
 },{_id:false});
 module.exports =  mongoose.model('userdata',userdata);

@@ -41,3 +41,49 @@ exports.getproductprice=async(req,res,next)=>{
     }
 }
 
+
+exports.getProductsByFilter= async (req,res,next) =>{
+    let filter = req.query.filter;
+    let page = req.query.page;
+    let resp = [];
+    try{
+        
+    const currentPage = page || 1;
+    const perpage = 12;
+      
+    let product = await Products.find({category:filter}).skip((currentPage-1)*perpage).limit(perpage);
+    let totalitem = product.length;
+
+    for(let i=0;i<totalitem;i++){
+        let id = product[i]._id;
+        let name = product[i].name;
+        let description = product[i].description;
+        let measurement = product[i].measurement;
+        let manufacturer = product[i].manufacturer;
+        let category = product[i].category;
+        let images = product[i].imgsrc;
+        let imgsrc = product[i].imgsrc[0];
+        let data = await productprice.findById(id);
+        let price = data.price;
+        resp.push(
+            {
+                name,
+                id,
+                measurement,
+                manufacturer,
+                description,
+                category,
+                price,
+                imgsrc,
+                images
+            }
+        );
+    }
+
+    res.status(200).json({product:resp,item:totalitem});
+
+    }catch(e){
+        let err = new Error(e).stack;
+        next({msg:err,code:500});
+    }
+}

@@ -95,7 +95,7 @@ app.post('/user/signup',auth.signupuser);
 app.post('/user/login',auth.userlogin);
 app.post('/user/setuserdata',isAuth,user.setuserdata);
 app.put('/user/updateuserdata',isAuth,user.updateuserdata);
-app.get('/user/getuserdata',isAuth,user.getuserdata);
+app.get('/user/getuserdata',isAuthGet,user.getuserdata);
 app.put('/user/updateuseravatar',uploadavatar.single('file'),isAuth,(req,res,next)=>{
     const file = req.file;
     if (!file) {
@@ -114,17 +114,14 @@ app.post('/admin/addproductimage', upload.array('file',1),isAuth,isAdmin,(req, r
         res.status(200).json(  new String(file[0].path).replace(/\\/g,"/"));
     }  
 });
-
-
 app.post("/admin/addproductdata",isAuth,isAdmin,admin.addproduct);
-
-
 app.put('/admin/updateproduct',isAuth,isAdmin,admin.updateproduct);
 app.delete('/admin/deleteproduct',isAuth,isAdmin,admin.deleteproduct);
 app.get('/product/getproducts',isAuthGet,product.getproduct);
 app.get('/product/getallproducts',isAuthGet,isAdmin,product.getAllproduct);
 app.get('/product/getproductsprice',isAuthGet,product.getproductprice);
 app.put('/admin/updateproductprice',isAuth,isAdmin,admin.updateproductprice);
+app.get('/shop/getproductsbyfilter',isAuthGet,product.getProductsByFilter);
 
 
 //delivery service
