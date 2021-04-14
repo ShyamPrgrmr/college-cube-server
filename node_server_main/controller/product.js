@@ -5,11 +5,19 @@ exports.getproduct=async(req,res,next)=>{
     let page = req.query.page;
     const currentPage = page || 1;
     const perpage = 10;
+    let response_var = [];
+
     try {     
-        
         let product = await Products.find().skip((currentPage-1)*perpage).limit(perpage);
-        let totalitem = product.length;
-        res.status(200).json({product:product,item:totalitem});
+        for(let p of product){
+            let price_var = await productprice.findById(p._id);
+            let price = price_var.price;
+            let r = Object.assign({},{...p._doc},{price});
+            response_var.push(r);
+        }
+        let length = response_var.length;
+        res.status(200).json({product:response_var,item:length});
+
     } catch (error) {
         err = new Error(error);
         next({msg:err.message,code:500});

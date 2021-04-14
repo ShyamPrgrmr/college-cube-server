@@ -29,6 +29,14 @@ const order = new schema({
     status:{
         type:Number,
         required:true
+    },
+    ordertype:{
+        type:String,
+        required:true
+    },
+    date:{
+        type:String,
+        required:true
     }
 
 },{timestamps:true});

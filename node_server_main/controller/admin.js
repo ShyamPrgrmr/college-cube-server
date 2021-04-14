@@ -8,6 +8,7 @@ const orders = require("../model/order");
 const userdata = require("../model/userdata");
 const order = require("../model/order");
 const product = require("./../model/product");
+const filters  = require("./../model/filters");
 
 
 exports.addproduct = (req,res,next) =>{
@@ -95,15 +96,29 @@ exports.updateproductprice=async(req,res,next)=>{
     }
 }
 
+exports.testing=async(req,res,next)=>{
+    try{
+        
+        
+       // res.status(200).json(product);
+    }catch(e){
+        let err = new Error(e);
+    }
+}
+
 exports.getAllOrders=async(req,res,next)=>{
     try{
-        const orderdata = await order.find();
+
+        
+        let now = new Date();
+        let date = now.getDate()+"/"+(now.getMonth()+1)+"/"+now.getFullYear();
+        const orderdata = await order.find({date:date});
         let response = [];
         let length = orderdata.length;
 
         for(let i = 0;i < length;i++){
             let temp = {};
-            const {userid,products,totalprice,createdAt,_id,status} = orderdata[i];
+            const {userid,products,totalprice,createdAt,_id,status,ordertype} = orderdata[i];
             const {name,mobile,address} = await userdata.findById(userid);
             
             temp.userid = userid;
@@ -126,6 +141,7 @@ exports.getAllOrders=async(req,res,next)=>{
             temp.placedat = createdAt;
             temp.orderid = _id;  
             temp.orderstatus = status;
+            temp.ordertype = ordertype;
 
             response.push(temp);
         }
@@ -146,7 +162,7 @@ exports.getAllAcceptedOrders=async (req,res,next)=>{
 
         for(let i = 0;i < length;i++){
             let temp = {};
-            const {userid,products,totalprice,createdAt,_id,status} = orderdata[i];
+            const {userid,products,totalprice,createdAt,_id,status,ordertype} = orderdata[i];
             const {name,mobile,address} = await userdata.findById(userid);
             
             temp.userid = userid;
@@ -169,6 +185,7 @@ exports.getAllAcceptedOrders=async (req,res,next)=>{
             temp.placedat = createdAt;
             temp.orderid = _id;  
             temp.orderstatus = status;
+            temp.ordertype = ordertype;
 
             if(status >= 1)
                 response.push(temp);
@@ -309,5 +326,16 @@ exports.getDateWiseNumbers=async(req,res,next)=>{
     }catch(err){
         let e  = new Error(err);
         next({code:500,msg:e.stack});
+    }
+}
+
+exports.addfilter=async(req,res,next)=>{
+    try{
+        let filter = req.body.filter.name;
+        let data = await filters.insertMany([{name:filter}]);
+        res.status(200).json({ data : data[0] });
+    }catch(e){
+        let err = new Error(e);
+        next({code:500,msq:err.stack});
     }
 }

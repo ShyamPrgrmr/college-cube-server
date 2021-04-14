@@ -33,7 +33,7 @@ exports.updateuserdata = async (req,res,next)=>{
     let mobile = req.body.mobile;
     
     try{
-        let user = await usersignup.findById(_id);
+        let user = await userdata.findById(_id);
         if(!user){
             let err = new Error("User not found!");
             next({msg:err.message,code:404});
@@ -42,8 +42,9 @@ exports.updateuserdata = async (req,res,next)=>{
             data.address=address;
             data.name=name;
             data.mobile= mobile;
+            console.log(data);
             let temp = await data.save();
-            res.status(200).json(data);
+            res.status(200).json(temp);
         }
 
     }catch(error){

@@ -64,6 +64,4 @@ exports.viewproductdataininventory= async (req,res,next)=>{
     }catch(e){
         let err = new Error(e); res.status(500).json({err:err.stack});
     }
-    
-    res.status(200).json([]);
 }

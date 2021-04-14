@@ -87,6 +87,8 @@ app.get('/shop/getorderdata',isAuth,shop.getorderdata);
 app.put('/shop/updateorder',isAuth,shop.updateproduct);
 app.delete('/shop/deleteorder',isAuth,shop.deleteorder);
 
+
+
 //admin operation
 app.post('/admin/login',auth.adminlogin);
 
@@ -122,6 +124,12 @@ app.get('/product/getallproducts',isAuthGet,isAdmin,product.getAllproduct);
 app.get('/product/getproductsprice',isAuthGet,product.getproductprice);
 app.put('/admin/updateproductprice',isAuth,isAdmin,admin.updateproductprice);
 app.get('/shop/getproductsbyfilter',isAuthGet,product.getProductsByFilter);
+app.get('/shop/getfilters',shop.getfilters);
+app.get('/shop/getproductbyfilter',shop.getproductbyfilter);
+app.post('/shop/addfilter',isAuth,isAdmin);
+app.get('/shop/getsingleproductdata',shop.getNameAndCategory);
+app.put('/shop/putreview',isAuth,shop.addreview);
+app.get('/shop/getproductreview',shop.getproductreview);
 
 
 //delivery service
@@ -131,6 +139,11 @@ app.post('/admin/order/setdelivery',isAuth,isAdmin,admin.setorder);
 app.put('/admin/order/outfordeliver',isAuth,isAdmin,admin.outForDelivery);
 app.put('/admin/order/delivered',isAuth,isAdmin,admin.delivered);
 app.get('/admin/order/getnumbers',isAuthGet,isAdmin,admin.getNumbersofAllAcceptedOrders);
+app.post('/admin/addfilter',isAuth,isAdmin,admin.addfilter);
+
+
+//testing
+app.get("/admin/test",isAuthGet,isAdmin,admin.testing);
 
 
 //error handling
