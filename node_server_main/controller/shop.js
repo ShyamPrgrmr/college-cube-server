@@ -124,9 +124,35 @@ exports.addorder=async(req,res,next)=>{
 
 exports.getorders=async (req,res,next)=>{
     let userid = req.userid;
+    let date = req.query.date;
+    let lastfive = req.query.lastfive==="true";
+
     try{
-        let allorders = await order.find({userid});
-        res.status(200).json(allorders);
+        let allorders = [];
+        let response = [];
+
+        if(lastfive){
+            allorders = await order.find({userid}).sort('created-at').limit(5);
+        }else if(!date){
+            allorders = await order.find({userid}).sort('created-at');
+        }else{
+            allorders = await order.find({userid,date:date}).sort('created-at');
+        }
+        
+        for(let ord of allorders){
+            let products_var = ord.products;
+            let new_products = [];
+
+            for(let prd of products_var){
+                let p_temp = await products.findById(prd.productid);
+                let new_temp = Object.assign({},prd._doc,p_temp._doc);
+                new_products.push(new_temp);
+            }
+            response.push(Object.assign({},ord._doc,{products:new_products}));
+        }
+
+        res.status(200).json(response);
+
         return;
     }catch(e){
         let err = new Error(e);
@@ -136,7 +162,7 @@ exports.getorders=async (req,res,next)=>{
 }
 
 exports.getorderdata=async (req,res,next)=>{
-    let orderid = req.body.orderid;
+    let orderid = req.query.orderid;
 
     try{
         let allorders = await order.findById(orderid);

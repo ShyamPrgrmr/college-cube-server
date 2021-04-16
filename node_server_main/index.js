@@ -82,8 +82,8 @@ app.get('/admin/inventory/viewproductsininventory',isAuthGet,isAdmin,inventory.v
 
 //shop operation
 app.post('/shop/addorder',isAuth,shop.addorder);
-app.get('/shop/getorders',isAuth,shop.getorders);
-app.get('/shop/getorderdata',isAuth,shop.getorderdata);
+app.get('/shop/getorders',isAuthGet,shop.getorders);
+app.get('/shop/getorderdata',isAuthGet,shop.getorderdata);
 app.put('/shop/updateorder',isAuth,shop.updateproduct);
 app.delete('/shop/deleteorder',isAuth,shop.deleteorder);
 
