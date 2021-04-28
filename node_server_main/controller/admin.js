@@ -9,6 +9,9 @@ const userdata = require("../model/userdata");
 const order = require("../model/order");
 const product = require("./../model/product");
 const filters  = require("./../model/filters");
+const inventory = require("./../model/inventoryproduct");
+const itemsold = require("./../model/itemsold");
+const { findById } = require("../model/order");
 
 
 exports.addproduct = (req,res,next) =>{
@@ -31,16 +34,32 @@ exports.addproduct = (req,res,next) =>{
     }]).then(product=>{ 
         
         let id = product[0]._id;
+        
+        
         productprice.insertMany([{
             _id:id,
             price:0
         }]).then(p=>{
             product.price = p.price;
-            res.status(200).json(product);
         }).catch(e=>{
             let err = new Error(e);
             next({msg:err.message,code:500});
         });
+
+        inventory.insertMany({
+            _id:id,
+            quantity:0
+        }).then(p=>{
+
+            product.inventoryQuantity = p.quantity;
+            res.status(200).json(product);
+
+        }).catch(e=>{
+            let err = new Error(e);
+            next({msg:err.message,code:500});
+        });
+
+
 
     }).catch(e=>{
         let err = new Error(e);
@@ -130,10 +149,12 @@ exports.getAllOrders=async(req,res,next)=>{
             
             for(let i=0;i<products.length;i++){
                 const a = await product.find({_id:products[i].productid});
+                const invQuan = await inventory.findById(products[i].productid);
+                let inventory_q = invQuan.quantity;
                 let quantity = products[i].quantity;
                 let price = products[i].price;
                 let id = products[i].productid;
-                data.push({name:a[0].name,quantity,price,id});
+                data.push({name:a[0].name,quantity,price,id,inventory_q});
             }
 
             temp.products = data;
@@ -213,6 +234,31 @@ exports.setorder = async(req,res,next)=>{
         const status = req.body.status;
         let temp = await order.findById(orderid);
         status ? temp.status = 1 : temp.status = 0;
+        let products = temp.products;
+        
+        for(pr of products){
+            let id = pr.productid;
+            let newtemp = await inventory.findById(id);
+            newtemp.quantity = parseInt(newtemp.quantity) - (pr.quantity);
+            
+            let date = new Date();
+            let now = `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`;
+
+            
+            let te = await itemsold.find({_id:id,date:now});
+            if(te.length===0) await itemsold.insertMany({date:now,_id:id,quantity:pr.quantity});
+            else{
+                let nt = await itemsold.findById(id);
+                nt.quantity = parseInt(nt.quantity) + parseInt(pr.quantity);
+                nt.save();
+            }
+
+
+            await newtemp.save();
+        }   
+
+        //reduce item from inventory...
+
         let data = await temp.save();
         res.status(200).json(data);
     }catch(e){
@@ -240,6 +286,7 @@ exports.delivered = async(req,res,next)=>{
     try{
         const orderid  = req.body.orderid;
         let temp = await order.findById(orderid);
+        
         temp.status = 3;
         let data = await temp.save();
         res.status(200).json(data);
@@ -337,5 +384,29 @@ exports.addfilter=async(req,res,next)=>{
     }catch(e){
         let err = new Error(e);
         next({code:500,msq:err.stack});
+    }
+}
+
+exports.getAllItemSold=async(req,res,next)=>{
+    try{
+        let date = req.query.date;
+        let items = await itemsold.find({date});
+        let response=[];
+
+        for(let item of items){
+            let id = item._id;
+            let temp = await productprice.findById(id);
+            let price = temp.price;
+            temp = await product.findById(id);
+            let re = await inventory.findById(id);
+
+            response.push({ price,...temp._doc,soldquantity:item.quantity,stock:re.quantity});
+        }
+        
+        res.status(200).json(response);
+
+    }catch(e){
+        let err = new Error();
+        next({code:500,msg:err.stack});
     }
 }

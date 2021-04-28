@@ -22,6 +22,8 @@ const inventory = require('./controller/inventory');
 const app = express();
 const port = 8080;
 
+
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
       cb(null, 'images/product')
@@ -46,6 +48,11 @@ const uploadavatar = multer({storage: strg});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
+
+
+app.set('view engine', 'ejs');
+app.set('views', 'views');
+
 app.use((req,res,next)=>{
     res.setHeader("Access-Control-Allow-Origin","*");
     res.setHeader("Access-Control-Allow-Methods","OPTIONS,GET,POST,PUT,DELETE");
@@ -107,6 +114,11 @@ app.put('/user/updateuseravatar',uploadavatar.single('file'),isAuth,(req,res,nex
     }  
 },user.setuseravtar);
 
+app.post('/auth/getotp',auth.setOTP);
+app.post('/auth/checkotp',auth.checkOTP);
+app.post('/auth/forgotpassword',auth.forgotpassword);
+app.post('/auth/changepassword',isAuth,auth.changepassword);
+
 //product operation
 app.post('/admin/addproductimage', upload.array('file',1),isAuth,isAdmin,(req, res, next) => {
     const file = req.files;
@@ -130,6 +142,7 @@ app.post('/shop/addfilter',isAuth,isAdmin);
 app.get('/shop/getsingleproductdata',shop.getNameAndCategory);
 app.put('/shop/putreview',isAuth,shop.addreview);
 app.get('/shop/getproductreview',shop.getproductreview);
+app.get('/admin/getitemsold',isAuthGet,isAdmin,admin.getAllItemSold);
 
 
 //delivery service
