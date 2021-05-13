@@ -143,6 +143,8 @@ app.get('/shop/getsingleproductdata',shop.getNameAndCategory);
 app.put('/shop/putreview',isAuth,shop.addreview);
 app.get('/shop/getproductreview',shop.getproductreview);
 app.get('/admin/getitemsold',isAuthGet,isAdmin,admin.getAllItemSold);
+app.get('/admin/getpeichartdata',isAuthGet,isAdmin,admin.getPieChartData);
+app.post('/admin/getrecommended',shop.getreccommanded);
 
 
 //delivery service

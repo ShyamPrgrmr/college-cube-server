@@ -286,9 +286,16 @@ exports.delivered = async(req,res,next)=>{
     try{
         const orderid  = req.body.orderid;
         let temp = await order.findById(orderid);
-        
         temp.status = 3;
         let data = await temp.save();
+
+        let products = temp.products;
+        for(let pr of products){
+            let temp = await inventory.findById(pr.productid);
+            temp.quantity = temp.quantity - pr.quantity;
+            await temp.save(); 
+        }
+
         res.status(200).json(data);
     }catch(e){
         let err = new Error(e);
@@ -409,4 +416,23 @@ exports.getAllItemSold=async(req,res,next)=>{
         let err = new Error();
         next({code:500,msg:err.stack});
     }
+}
+
+exports.getPieChartData=async (req,res,next)=>{
+    try{
+       let data = await itemsold.find().sort({'quantity':-1});
+       let produ = data.slice(0,5);
+       let resp = [];
+       for(let pro of produ){
+        let temp = await product.findById(pro._id);
+        let name = temp.name;
+        let qty = pro.quantity;
+        resp.push({name,qty});
+       }
+       res.status(200).json(resp);
+    }catch(err){
+        let e = new Error(err);
+        next({code:500,msg:e.stack});
+    }
+
 }

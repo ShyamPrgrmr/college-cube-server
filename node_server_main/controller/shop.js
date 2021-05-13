@@ -420,3 +420,41 @@ exports.getproductreview=async(req,res,next)=>{
         next({code:500,msg:err.stack});
     }
 }
+
+exports.getreccommanded=async(req,res,next)=>{
+    let response = [];
+    let products_var = req.body;
+    let var_products = [];
+
+
+    for(let pr of products_var){
+        let temp = await products.findById(pr);
+        var_products.push(temp);
+    }
+    
+    for(let i=0;i<var_products.length;i++){
+        let pr = await productpricevar.findById(var_products[i]._id);
+        
+        let anything = await productreview.findById(var_products[i]._id);
+        let review_v = 0;
+        let count = 0;
+        if(!anything) review_v = 0;
+        else{ review_v = anything.final; count=anything.count; }
+
+        let price = pr.price;
+        let name = var_products[i].name;
+        let description = var_products[i].description;
+        let measurement = var_products[i].measurement;
+        let manufacturer =  var_products[i].manufacturer;
+        let category = var_products[i].category;
+        let id = var_products[i]._id;
+        let imgsrc = var_products[i].imgsrc[0];
+        let images = var_products[i].imgsrc;
+
+        response.push({
+            price,name,description,manufacturer,measurement,category,id,imgsrc,images,review : { rating:review_v,count }
+        });
+    }
+
+    res.status(200).json({products:response});
+}
